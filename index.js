@@ -130,6 +130,52 @@ app.delete('/songs/:id', async (req, res) => {
   }
 })
 
+// Update a challenge
+app.put("/songs/:id", async (req, res) => {
+  // check for body data
+  const error = {error: "Bad request",
+                 value: "Missing name, artist, genre or rating"}
+
+  if ( !req.body.name || !req.body.artist || !req.body.genre ||!req.body.rating) {
+    res.status(400).send(error);
+    return;
+  }
+  try {
+      //read the file
+      //connect to the database
+      await client.connect();
+      console.log("Connected correctly to server");
+      const db = client.db(dbName);
+      const col = db.collection("songs");  // Use the collection "challenges"
+
+    // Create a query for a challenge to update
+    const query = { _id: ObjectId(req.params.id) };
+    const message = { deleted: "Challenge updated"}
+
+    // update a challenge
+    const updateSong = {
+        name: req.body.name,
+        artist: req.body.artist,
+        genre: req.body.genre,
+        rating: req.body.rating,
+    };
+    console.log(query, updateSong);
+    // Updating the challenge
+    const result = await col.updateOne(query, {$set: updateSong});
+
+    // Send back success message
+    res.status(201).send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "something went wrong",
+      value: error,
+    });
+  } finally {
+    await client.close();
+  }
+});
+
 // create server with 'port' as fisrt variable & callback function as the second variable
 app.listen(port, () => {
   console.log(`API is running at http://localhost:${port}`);
