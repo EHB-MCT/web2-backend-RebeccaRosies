@@ -15,10 +15,35 @@ app.use(express.static('public'))
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get("/songs",(req,res)=>{
-  res.send("hello world!");
+app.get("/",(req,res)=>{
+  res.send("Everything is ok!");
 })
 
+app.get('/songs', async (req, res) => {
+  //get data from mongo en send naar res
+  try {
+      //read the file
+      //connect to the database
+      await client.connect();
+      console.log("Connected correctly to server");
+
+      const db = client.db(dbName);
+     
+      const col = db.collection("songs");  // Use the collection "challenges"
+   
+      const myDoc = await col.find({}).toArray();  // Find document & convert it to an array
+      console.log(myDoc);   // Print to the console
+      res.status(200).send(myDoc); //Send back the data with the response
+  } catch (err) {
+      console.log('error');
+      res.status(500).send({
+          error: 'an error has occured',
+          value: error
+      });
+  } finally {
+      await client.close();
+  }
+})
 /* async function run() {
   try {
        await client.connect();
@@ -53,4 +78,11 @@ run().catch(console.dir); */
 // create server with 'port' as fisrt variable & callback function as the second variable
 app.listen(port, () => {
   console.log(`API is running at http://localhost:${port}`);
+  client.connect(err =>{
+    if (err){
+      throw err;
+    }
+    db = client.db(dbName)
+    console.log(`connected to database ${dbName}`);
+  });
 })
