@@ -44,6 +44,52 @@ app.get('/songs', async (req, res) => {
       await client.close();
   }
 })
+
+app.post('/songs', async (req, res) => {
+  //can only send data in the body 
+  /* console.log(req.body);
+  res.send('ok'); */
+
+  if (!req.body.name || !req.body.artist || !req.body.genre || !req.body.rating) {
+      res.status(400).send('bad result, missing name, artist, genre or rating');
+      return;
+  }
+
+  try {
+      //connect with database
+      await client.connect();
+      console.log("Connected correctly to server");
+      // retrieve the collection data
+      const db = client.db(dbName);
+      const col = db.collection("songs");  // Use the collection "challenges"
+
+      //save new song
+      let newSong = {
+          name: req.body.name,
+          points: req.body.artist,
+          course: req.body.genre,
+          session: req.body.rating
+      }
+      
+      //insert into database
+      let insertResult = await col.insertOne(newSong);
+
+      //send back succes message
+
+      res.status(201).json(newSong);
+      console.log(newSong)
+      return;
+
+  } catch (error) {
+      console.log('error');
+      res.status(500).send({
+          error: 'an error has occured',
+          value: error
+      });
+  }finally{
+      await client.close();
+  }
+});
 /* async function run() {
   try {
        await client.connect();
