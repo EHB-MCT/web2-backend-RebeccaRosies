@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const cors = require ("cors");
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -90,36 +90,45 @@ app.post('/songs', async (req, res) => {
       await client.close();
   }
 });
-/* async function run() {
-  try {
-       await client.connect();
-       console.log("Connected correctly to server");
-       const db = client.db(dbName);
-       // Use the collection "people"
-       const col = db.collection("songs");
-       // Construct a document                                                                                                                                                              
-       let songDocument = {
-           "name":"Animals",
-           "artist": "THE HARA",                                                                                                                                 
-           "genre":"ALT",                                                                                                                                 
-           "rating":8
-       }
-       // Insert a single document, wait for promise so we can read it back
-       //const p = await col.insertOne(songDocument);
-       // Find one document
-       const myDoc = await col.findOne();
-       // Print to the console
-       console.log(myDoc);
-       
-      } catch (err) {
-        console.log(err.stack);
-    }
 
-    finally {
-       await client.close();
-   }
-}
-run().catch(console.dir); */
+app.delete('/songs/:id', async (req, res) => {
+  if (!req.params.id || req.params.id.length != 24 ) {
+      res.status(400).send('bad result, missing id or id is not 24 chars long');
+      return;
+  }
+  try {
+      //read the file
+      //connect to the database
+      await client.connect();
+      console.log("Connected correctly to server");
+      const db = client.db(dbName);
+      const col = db.collection("songs");  // Use the collection "challenges"
+   
+      // Create a query for a challenge to delete
+      const query = { _id: ObjectId(req.params.id) };
+      const message = { deleted: "Song deleted"}
+
+      // Deleting the challenge
+          const result = await col.deleteOne(query);
+      if (result.deletedCount === 1 ) {
+      res
+          .status(200)
+          .send(message);
+      } else {
+      res
+          .status(404)
+          .send("No documents matched the query. Deleted 0 documents.");
+      }
+  } catch (err) {
+      console.log('error');
+      res.status(500).send({
+          error: 'an error has occured',
+          value: error
+      });
+  } finally {
+      await client.close();
+  }
+})
 
 // create server with 'port' as fisrt variable & callback function as the second variable
 app.listen(port, () => {
