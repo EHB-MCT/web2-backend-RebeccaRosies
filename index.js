@@ -3,11 +3,12 @@ const cors = require ("cors");
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+require('dotenv').config();
 const port = process.env.PORT || 3000;
+console.log(process.env.PORT)
 
 // extra variable & info fr mongodb to work
-const uri = "mongodb+srv://admin:admin@cluster0.dzxmp.mongodb.net/persic?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(process.env.FINAL_URL);
 
 const dbName = "persic";
 
@@ -130,7 +131,6 @@ app.delete('/songs/:id', async (req, res) => {
   }
 })
 
-// Update a challenge
 app.put("/songs/:id", async (req, res) => {
   // check for body data
   const error = {error: "Bad request",
