@@ -67,9 +67,9 @@ app.post('/songs', async (req, res) => {
       //save new song
       let newSong = {
           name: req.body.name,
-          points: req.body.artist,
-          course: req.body.genre,
-          session: req.body.rating
+          artist: req.body.artist,
+          genre: req.body.genre,
+          rating: req.body.rating
       }
       
       //insert into database
