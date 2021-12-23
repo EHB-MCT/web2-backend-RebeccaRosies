@@ -103,15 +103,13 @@ app.delete('/songs/:id', async (req, res) => {
       await client.connect();
       console.log("Connected correctly to server");
       const db = client.db(dbName);
-      const col = db.collection("songs");  // Use the collection "challenges"
-   
-      // Create a query for a challenge to delete
-      const query = { _id: ObjectId(req.params.id) };
-      const message = { deleted: "Song deleted"}
+      const col = db.collection("songs");  // Use the collection songs"
+
+      const message = { deleted: "All songs deleted"}
 
       // Deleting the challenge
-          const result = await col.deleteOne(query);
-      if (result.deletedCount === 1 ) {
+          const result = await col.deleteMany();
+      if (result.deletedCount >= 1 ) {
       res
           .status(200)
           .send(message);
@@ -129,6 +127,42 @@ app.delete('/songs/:id', async (req, res) => {
   } finally {
       await client.close();
   }
+})
+
+app.deleteOne('/songs', async(req, res) => {
+try {
+    //read the file
+    //connect to the database
+    await client.connect();
+    console.log("Connected correctly to server");
+    const db = client.db(dbName);
+    const col = db.collection("songs");  // Use the collection "songs"
+ 
+    // Create a query for a challenge to delete
+    const query = { _id: ObjectId(req.params.id) };
+    const message = { deleted: "Song deleted"}
+
+    // Deleting the challenge
+        const result = await col.deleteOne(query);
+    if (result.deletedCount === 1 ) {
+    res
+        .status(200)
+        .send(message);
+    } else {
+    res
+        .status(404)
+        .send("No documents matched the query. Deleted 0 documents.");
+    }
+} catch (err) {
+    console.log('error');
+    res.status(500).send({
+        error: 'an error has occured',
+        value: error
+    });
+} finally {
+    await client.close();
+}
+
 })
 
 app.put("/songs/:id", async (req, res) => {
