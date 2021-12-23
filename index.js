@@ -46,33 +46,30 @@ app.get('/songs', async (req, res) => {
   }
 })
 
-app.get('/songs/:id', async (req, res) => {
-  //get data from mongo en send naar res
+/* app.get('/songs/:id', async (req, res) => {
   try {
-      //read the file
-      //connect to the database
-      await client.connect();
+      await client.connect()
       console.log("Connected correctly to server");
-
       const db = client.db(dbName);
-      const col = db.collection("songs");  // Use the collection "challenges"
+      const col = db.collection("songs");
 
-      const query = { _id: ObjectId(req.params.id) };
-     
-      const myDoc = await col.findOne(query);  // Find document & convert it to an array
-      console.log(myDoc);   // Print to the console
-      res.status(200).send(myDoc); //Send back the data with the response
-  } catch (err) {
-      console.log('error');
+      const query = {
+          _id: ObjectId(req.params.id)
+      }
+
+      const doc = await col.findOne(query)
+
+      res.status(200).json(doc)
+  } catch (error) {
       res.status(500).send({
-          error: "No documents matched the query. got 0 documents.",
-          value: error
-      });
+          error: 'something went wrong',
+          value: error.stack
+      })
   } finally {
-      await client.close();
+      await client.close()
   }
 })
-
+ */
 app.post('/songs', async (req, res) => {
   //can only send data in the body 
   /* console.log(req.body);
@@ -247,7 +244,7 @@ app.get('/songs/favorites', async (req, res) => {
 
       const db = client.db(dbName);
      
-      const col = db.collection("favSongs");  // Use the collection "challenges"
+      const col = db.collection("favSongs");  // Use the collection "favSongs"
    
       const myDoc = await col.find({}).toArray();  // Find document & convert it to an array
       console.log(myDoc);   // Print to the console
