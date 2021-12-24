@@ -16,8 +16,10 @@ app.use(express.static('public'))
 app.use(bodyParser.json());
 app.use(cors());
 
+
 app.get("/",(req,res)=>{
   res.send("Everything is ok!");
+  res.status(300).redirect('/info.html');
 })
 
 app.get('/songs', async (req, res) => {
@@ -46,30 +48,6 @@ app.get('/songs', async (req, res) => {
   }
 })
 
-/* app.get('/songs/:id', async (req, res) => {
-  try {
-      await client.connect()
-      console.log("Connected correctly to server");
-      const db = client.db(dbName);
-      const col = db.collection("songs");
-
-      const query = {
-          _id: ObjectId(req.params.id)
-      }
-
-      const doc = await col.findOne(query)
-
-      res.status(200).json(doc)
-  } catch (error) {
-      res.status(500).send({
-          error: 'something went wrong',
-          value: error.stack
-      })
-  } finally {
-      await client.close()
-  }
-})
- */
 app.post('/songs', async (req, res) => {
   //can only send data in the body 
   /* console.log(req.body);
