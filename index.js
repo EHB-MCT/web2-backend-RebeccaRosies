@@ -18,7 +18,6 @@ app.use(cors());
 
 
 app.get("/",(req,res)=>{
-  res.send("Everything is ok!");
   res.status(300).redirect('/info.html');
 })
 
